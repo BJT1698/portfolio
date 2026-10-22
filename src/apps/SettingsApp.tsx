@@ -8,6 +8,7 @@ import { useIsMobile } from '../lib/useMediaQuery'
 import { profile } from '../config/profile'
 import { fonts } from '../config/fonts'
 import { loadFont } from '../lib/fonts'
+import { canFullscreen, enterFullscreen, exitFullscreen } from '../lib/fullscreen'
 
 const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <fieldset className="border-b border-surface0 py-3 last:border-0">
@@ -310,6 +311,7 @@ function MobileSettings() {
           />
         </div>
         <KbLayout mobile value={kbLayout} onToggle={toggleKbLayout} />
+        {canFullscreen() && <FullscreenRow />}
       </Group>
 
       <Group title="info">
@@ -333,6 +335,30 @@ function MobileSettings() {
 }
 
 /** Interruttore vero: traccia + pomello, area di tocco 44px. */
+/** Schermo intero automatico: attivandolo entra subito (il tocco è un gesto valido), disattivandolo esce. */
+function FullscreenRow() {
+  const auto = useSettings((s) => s.autoFullscreen)
+  const toggle = useSettings((s) => s.toggleAutoFullscreen)
+  return (
+    <div className={ROW}>
+      <span className="min-w-0 flex-1">
+        <span className="block text-text" id="set-fullscreen">Schermo intero</span>
+        <span className="block text-xs text-overlay">nasconde la barra del browser</span>
+      </span>
+      <Switch
+        on={auto}
+        labelledBy="set-fullscreen"
+        onChange={() => {
+          if (auto) exitFullscreen()
+          else enterFullscreen()
+          toggle()
+          beep('click')
+        }}
+      />
+    </div>
+  )
+}
+
 function Switch({ on, labelledBy, onChange }: { on: boolean; labelledBy: string; onChange: () => void }) {
   return (
     <button type="button" role="switch" aria-checked={on} aria-labelledby={labelledBy} onClick={onChange} className="-mr-1 grid h-11 w-16 shrink-0 place-items-center">

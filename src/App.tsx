@@ -23,9 +23,9 @@ export default function App() {
   useEffect(() => {
     const root = document.documentElement
     root.dataset.theme = theme
-    // La barra del browser mobile segue il colore di sfondo del tema.
-    const crust = getComputedStyle(root).getPropertyValue('--crust').trim()
-    if (crust) document.querySelector('meta[name="theme-color"]')?.setAttribute('content', crust)
+    // La barra del browser mobile prende il colore della barra di stato del sito (mantle): un'unica fascia.
+    const mantle = getComputedStyle(root).getPropertyValue('--mantle').trim()
+    if (mantle) document.querySelector('meta[name="theme-color"]')?.setAttribute('content', mantle)
   }, [theme])
 
   useEffect(() => {
