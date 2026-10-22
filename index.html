@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="it" data-theme="mocha">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#11111b" />
+    <!-- Domini da cui arrivano anteprime video e foto (app Video e Gallery). -->
+    <link rel="preconnect" href="https://i.ytimg.com" />
+    <link rel="preconnect" href="https://gallery.bjt1698.it" />
+    <!-- Con JS attivo il CV statico (per crawler/agenti) resta nascosto finché React non lo sostituisce. -->
+    <script>document.documentElement.classList.add('js')</script>
+    <title>lorenzo@portfolio:~</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

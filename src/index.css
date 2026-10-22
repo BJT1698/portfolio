@@ -1,0 +1,495 @@
+@import '@fontsource/iosevka/latin-400.css';
+@import '@fontsource/iosevka/latin-700.css';
+@import '@fontsource/jetbrains-mono/latin-400.css';
+@import 'tailwindcss';
+
+/* Palette: ogni tema ridefinisce le stesse variabili, Tailwind le espone come colori
+   (bg-base, text-text, border-surface1, text-accent, ...). */
+:root {
+  /* Font scelto nelle Impostazioni (src/lib/fonts.ts). */
+  --app-font: 'Iosevka';
+}
+
+:root,
+[data-theme='mocha'] {
+  --crust: #11111b;
+  --mantle: #181825;
+  --base: #1e1e2e;
+  --surface0: #313244;
+  --surface1: #45475a;
+  --overlay: #6c7086;
+  --subtext: #a6adc8;
+  --text: #cdd6f4;
+  --red: #f38ba8;
+  --green: #a6e3a1;
+  --yellow: #f9e2af;
+  --blue: #89b4fa;
+  --mauve: #cba6f7;
+  --peach: #fab387;
+  --teal: #94e2d5;
+  --accent: var(--mauve);
+}
+
+[data-theme='tokyonight'] {
+  --crust: #13131a;
+  --mantle: #16161e;
+  --base: #1a1b26;
+  --surface0: #24283b;
+  --surface1: #414868;
+  --overlay: #565f89;
+  --subtext: #a9b1d6;
+  --text: #c0caf5;
+  --red: #f7768e;
+  --green: #9ece6a;
+  --yellow: #e0af68;
+  --blue: #7aa2f7;
+  --mauve: #bb9af7;
+  --peach: #ff9e64;
+  --teal: #73daca;
+  --accent: var(--blue);
+}
+
+[data-theme='gruvbox'] {
+  --crust: #161819;
+  --mantle: #1d2021;
+  --base: #282828;
+  --surface0: #3c3836;
+  --surface1: #504945;
+  --overlay: #7c6f64;
+  --subtext: #bdae93;
+  --text: #ebdbb2;
+  --red: #fb4934;
+  --green: #b8bb26;
+  --yellow: #fabd2f;
+  --blue: #83a598;
+  --mauve: #d3869b;
+  --peach: #fe8019;
+  --teal: #8ec07c;
+  --accent: var(--yellow);
+}
+
+[data-theme='dracula'] {
+  --crust: #191a21;
+  --mantle: #21222c;
+  --base: #282a36;
+  --surface0: #343746;
+  --surface1: #44475a;
+  --overlay: #6272a4;
+  --subtext: #bfc1d0;
+  --text: #f8f8f2;
+  --red: #ff5555;
+  --green: #50fa7b;
+  --yellow: #f1fa8c;
+  --blue: #8be9fd;
+  --mauve: #ff79c6;
+  --peach: #ffb86c;
+  --teal: #a4ffff;
+  --accent: #bd93f9;
+}
+
+[data-theme='nord'] {
+  --crust: #242933;
+  --mantle: #292e39;
+  --base: #2e3440;
+  --surface0: #3b4252;
+  --surface1: #434c5e;
+  --overlay: #616e88;
+  --subtext: #d8dee9;
+  --text: #eceff4;
+  --red: #bf616a;
+  --green: #a3be8c;
+  --yellow: #ebcb8b;
+  --blue: #81a1c1;
+  --mauve: #b48ead;
+  --peach: #d08770;
+  --teal: #8fbcbb;
+  --accent: #88c0d0;
+}
+
+[data-theme='rosepine'] {
+  --crust: #13111c;
+  --mantle: #191724;
+  --base: #1f1d2e;
+  --surface0: #26233a;
+  --surface1: #403d52;
+  --overlay: #6e6a86;
+  --subtext: #908caa;
+  --text: #e0def4;
+  --red: #eb6f92;
+  --green: #9ccfd8;
+  --yellow: #f6c177;
+  --blue: #3e8fb0;
+  --mauve: #c4a7e7;
+  --peach: #ebbcba;
+  --teal: #9ccfd8;
+  --accent: #ebbcba;
+}
+
+[data-theme='kanagawa'] {
+  --crust: #16161d;
+  --mantle: #1a1a22;
+  --base: #1f1f28;
+  --surface0: #2a2a37;
+  --surface1: #363646;
+  --overlay: #727169;
+  --subtext: #c8c093;
+  --text: #dcd7ba;
+  --red: #e46876;
+  --green: #98bb6c;
+  --yellow: #e6c384;
+  --blue: #7e9cd8;
+  --mauve: #957fb8;
+  --peach: #ffa066;
+  --teal: #7aa89f;
+  --accent: #7fb4ca;
+}
+
+[data-theme='everforest'] {
+  --crust: #1e2326;
+  --mantle: #232a2e;
+  --base: #2d353b;
+  --surface0: #343f44;
+  --surface1: #475258;
+  --overlay: #7a8478;
+  --subtext: #9da9a0;
+  --text: #d3c6aa;
+  --red: #e67e80;
+  --green: #a7c080;
+  --yellow: #dbbc7f;
+  --blue: #7fbbb3;
+  --mauve: #d699b6;
+  --peach: #e69875;
+  --teal: #83c092;
+  --accent: #a7c080;
+}
+
+[data-theme='onedark'] {
+  --crust: #1b1f23;
+  --mantle: #21252b;
+  --base: #282c34;
+  --surface0: #2c313a;
+  --surface1: #3e4451;
+  --overlay: #5c6370;
+  --subtext: #9da5b4;
+  --text: #abb2bf;
+  --red: #e06c75;
+  --green: #98c379;
+  --yellow: #e5c07b;
+  --blue: #61afef;
+  --mauve: #c678dd;
+  --peach: #d19a66;
+  --teal: #56b6c2;
+  --accent: #61afef;
+}
+
+@theme inline {
+  --color-crust: var(--crust);
+  --color-mantle: var(--mantle);
+  --color-base: var(--base);
+  --color-surface0: var(--surface0);
+  --color-surface1: var(--surface1);
+  --color-overlay: var(--overlay);
+  --color-subtext: var(--subtext);
+  --color-text: var(--text);
+  --color-red: var(--red);
+  --color-green: var(--green);
+  --color-yellow: var(--yellow);
+  --color-blue: var(--blue);
+  --color-mauve: var(--mauve);
+  --color-peach: var(--peach);
+  --color-teal: var(--teal);
+  --color-accent: var(--accent);
+  --font-mono: var(--app-font), 'Iosevka', 'JetBrains Mono', ui-monospace, monospace;
+  --animate-win-in: win-in 140ms ease-out;
+  --animate-blink: blink 1s steps(1) infinite;
+  --animate-fade-in: fade-in 600ms ease-out;
+  --animate-droid: droid 900ms ease-in-out infinite;
+  --animate-app-open: app-open 340ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  --animate-app-close: app-close 220ms ease-in forwards;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+/* Puntini rimbalzanti dell'avvio "Android". */
+@keyframes droid {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  40% {
+    transform: translateY(-16px) scale(1.15);
+  }
+}
+
+/* Apertura/chiusura app su mobile: zoom dall'icona toccata. */
+@keyframes app-open {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+    border-radius: 6px;
+  }
+}
+
+@keyframes app-close {
+  to {
+    opacity: 0;
+    transform: scale(0.2);
+    border-radius: 6px;
+  }
+}
+
+@keyframes win-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(6px);
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  html {
+    color-scheme: dark;
+    /* Gli stati :active bastano come feedback al tocco. */
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Niente ritardo/zoom da doppio tap sugli elementi interattivi. */
+  body,
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  label,
+  summary,
+  [role='button'] {
+    touch-action: manipulation;
+  }
+  body {
+    @apply bg-crust font-mono text-text antialiased;
+    font-size: 14px;
+    overflow: hidden;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface1) transparent;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .wallpaper-grid {
+    background-color: var(--crust);
+    background-image:
+      radial-gradient(ellipse at 70% 20%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 60%),
+      linear-gradient(color-mix(in srgb, var(--surface0) 45%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--surface0) 45%, transparent) 1px, transparent 1px);
+    background-size:
+      100% 100%,
+      32px 32px,
+      32px 32px;
+  }
+  .wallpaper-dots {
+    background-color: var(--crust);
+    background-image:
+      radial-gradient(ellipse at 30% 80%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 60%),
+      radial-gradient(color-mix(in srgb, var(--surface1) 70%, transparent) 1px, transparent 1px);
+    background-size:
+      100% 100%,
+      20px 20px;
+  }
+  .wallpaper-none {
+    background-color: var(--crust);
+  }
+}
+
+/* CV statico in index.html (crawler, agenti AI, browser senza JS). Con JS è nascosto: React lo sostituisce.
+   Se React non parte (errore, bundle bloccato) riappare dopo 4s. */
+.js .static-cv {
+  visibility: hidden;
+  animation: static-cv-reveal 0s 4s forwards;
+}
+@keyframes static-cv-reveal {
+  to {
+    visibility: visible;
+  }
+}
+.static-cv {
+  height: 100%;
+  overflow-y: auto;
+  padding: 2rem 1rem;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--crust);
+
+  & > * {
+    max-width: 48rem;
+    margin-inline: auto;
+  }
+  & h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  & h2 {
+    margin-top: 1.5rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  & h3 {
+    margin-top: 0.75rem;
+    font-weight: 700;
+  }
+  & ul {
+    padding-left: 1.25rem;
+    list-style: disc;
+  }
+  & a {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+}
+
+/* CV stampabile, layout formale stile Europass: colonna etichette a sinistra, contenuto a destra. */
+.europass {
+  --ep-blue: #0e4194;
+  font-family: Arial, 'Liberation Sans', Helvetica, sans-serif;
+  font-size: 9.5pt;
+  line-height: 1.35;
+  color: #1a1a1a;
+  background: #fff;
+
+  & p,
+  & ul,
+  & dl {
+    margin: 0;
+  }
+  & .ep-row {
+    display: grid;
+    grid-template-columns: 30% 1fr;
+    column-gap: 6mm;
+    margin-bottom: 1.8mm;
+  }
+  & .ep-label {
+    text-align: right;
+    color: var(--ep-blue);
+    font-size: 8.5pt;
+  }
+  & .ep-cv {
+    font-size: 12pt;
+    letter-spacing: 0.02em;
+  }
+  & .ep-name {
+    margin: 0;
+    font-size: 18pt;
+    font-weight: 400;
+    color: #000;
+  }
+  & .ep-section {
+    font-size: 9pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  & .ep-rule {
+    margin: 2.2mm 0 0;
+    border: 0;
+    border-top: 1.5px solid var(--ep-blue);
+  }
+  & .ep-row:has(.ep-section) {
+    margin-top: 4mm;
+    margin-bottom: 2.5mm;
+    /* Il titolo di sezione non resta mai da solo in fondo alla pagina. */
+    break-after: avoid;
+  }
+  & .ep-photo {
+    display: inline-block;
+    width: 25mm;
+    height: 25mm;
+    object-fit: cover;
+  }
+  & .ep-info {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.8mm 4mm;
+  }
+  & .ep-info dt {
+    color: var(--ep-blue);
+  }
+  & .ep-info dd {
+    margin: 0;
+  }
+  & .ep-strong {
+    font-weight: 700;
+    color: #000;
+  }
+  & ul {
+    padding-left: 4.5mm;
+    margin-top: 1mm;
+    list-style: disc;
+  }
+  & li::marker {
+    color: var(--ep-blue);
+  }
+  & .ep-entry {
+    break-inside: avoid;
+  }
+  & .ep-lang td {
+    padding: 0 6mm 0.5mm 0;
+  }
+  & .ep-gdpr {
+    margin-top: 4mm;
+    font-size: 7.5pt;
+    color: #555;
+  }
+}
+
+@page {
+  size: A4;
+  margin: 12mm 15mm;
+}
+
+/* Stampa: solo l'elemento .print-root (usato dall'export PDF del CV). */
+@media print {
+  body {
+    overflow: visible;
+    background: #fff;
+  }
+  body:has(.print-root) #root {
+    display: none;
+  }
+  .print-root {
+    display: block !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    /* Le animazioni infinite (cursore, puntini) finirebbero a sfarfallare a 1ms. */
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}

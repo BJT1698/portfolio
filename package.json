@@ -1,0 +1,45 @@
+{
+  "name": "lorenzo-vicentini-portfolio",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "gen:cv": "node scripts/gen-cv.ts",
+    "dev": "npm run gen:cv && npm run gen:videos && vite",
+    "build": "npm run gen:cv && npm run gen:videos && tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "gen:videos": "node scripts/gen-videos.ts"
+  },
+  "dependencies": {
+    "@fontsource/cascadia-code": "^5.3.0",
+    "@fontsource/commit-mono": "^5.3.0",
+    "@fontsource/fira-code": "^5.3.0",
+    "@fontsource/geist-mono": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/iosevka": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/source-code-pro": "^5.3.1",
+    "@fontsource/victor-mono": "^5.3.0",
+    "lucide-react": "^1.61.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-rnd": "^10.5.3",
+    "simple-icons": "^16.35.0",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "oxlint": "^1.88.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.4"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}
