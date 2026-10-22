@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useIntro } from '../lib/useIntro'
+import { profile } from '../config/profile'
 
-// Avvio su smartphone, stile Android: splash del "produttore", poi animazione di boot a puntini.
+// Avvio su smartphone, stile Android: splash con la foto profilo, poi animazione di boot a puntini
+// nel colore d'accento del tema scelto.
 // Durata ~4.5s, un tocco la salta.
 
 const FADE_MS = 400
-const DOTS = ['bg-blue', 'bg-red', 'bg-yellow', 'bg-green']
+// Stesso colore d'accento, intensità decrescente: i puntini seguono il tema attivo.
+const DOTS = ['opacity-100', 'opacity-75', 'opacity-55', 'opacity-35']
 
 export function AndroidBoot({ onDone }: { onDone: () => void }) {
   const { fading, finish } = useIntro(onDone, FADE_MS)
@@ -23,23 +26,19 @@ export function AndroidBoot({ onDone }: { onDone: () => void }) {
       style={{ transitionDuration: `${FADE_MS}ms` }}
     >
       <div className={`absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300 ${phase === 'oem' ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="grid size-20 animate-fade-in place-items-center rounded-[22px] border-2 border-white/90 text-2xl font-bold tracking-tight">LV</div>
-        <p className="absolute bottom-14 text-[10px] tracking-[0.3em] text-white/45 uppercase">powered by linux</p>
+        <img src={profile.avatar} alt="" width={96} height={96} className="size-24 animate-fade-in rounded-md border border-white/20 object-cover" />
       </div>
 
       <div
-        className={`absolute inset-0 flex flex-col items-center justify-center gap-7 transition-[opacity,transform] duration-300 ease-out ${
+        className={`absolute inset-0 flex items-center justify-center transition-[opacity,transform] duration-300 ease-out ${
           phase === 'anim' ? 'opacity-100' : 'opacity-0'
         } ${phase === 'out' ? 'scale-110' : ''}`}
       >
         <div className="flex gap-3">
           {DOTS.map((c, i) => (
-            <span key={c} className={`size-3.5 rounded-full ${c} animate-droid`} style={{ animationDelay: `${i * 120}ms` }} />
+            <span key={c} className={`size-3.5 rounded-full bg-accent ${c} animate-droid`} style={{ animationDelay: `${i * 120}ms` }} />
           ))}
         </div>
-        <p className="text-sm tracking-[0.35em] text-white/85">
-          lorenzo<span className="text-white/40">os</span>
-        </p>
       </div>
 
       <p className="absolute inset-x-0 bottom-5 text-center text-[10px] text-white/60">tocca per saltare</p>
