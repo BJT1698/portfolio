@@ -94,12 +94,18 @@ function useClock() {
   return now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
 }
 
-/** Stessa barra del desktop, ridotta: utente@host a sinistra, indicatori e ora a destra. */
+/**
+ * Stessa barra del desktop, ridotta: utente@host a sinistra, indicatori e ora a destra.
+ * A schermo intero (o come app installata) occupa la fascia della fotocamera invece di aggiungersi
+ * sotto di essa: alta quanto la safe area (minimo 2rem), contenuto in basso e lontano dagli angoli.
+ */
 function PhoneStatusBar({ className = '' }: { className?: string }) {
   const time = useClock()
   return (
-    <div className={`flex shrink-0 items-center justify-between border-b border-surface0 bg-mantle px-3 pt-[env(safe-area-inset-top)] text-xs ${className}`}>
-      <span className="flex h-8 items-center">
+    <div
+      className={`flex h-[max(2rem,env(safe-area-inset-top))] shrink-0 items-end justify-between border-b border-surface0 bg-mantle px-4 pb-2 text-xs ${className}`}
+    >
+      <span className="flex items-center">
         <span className="text-green">{profile.user}</span>
         <span className="text-overlay">@</span>
         <span className="text-blue">{profile.host}</span>
@@ -136,7 +142,7 @@ function Home({ inert }: { inert: boolean }) {
 
       <nav
         aria-label="Dock"
-        className={`relative mx-3 mb-[max(0.75rem,env(safe-area-inset-bottom))] grid grid-cols-4 gap-3 rounded-lg border border-surface1 bg-mantle/85 p-2.5 shadow-xl shadow-black/40 backdrop-blur-md transition-[transform,opacity] duration-300 ease-out ${
+        className={`relative mx-4 mb-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.5rem))] grid grid-cols-4 gap-3 rounded-lg border border-surface1 bg-mantle/85 p-2.5 shadow-xl shadow-black/40 backdrop-blur-md transition-[transform,opacity] duration-300 ease-out ${
           bars ? '' : 'translate-y-28 opacity-0'
         }`}
       >
