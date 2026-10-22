@@ -99,18 +99,20 @@ function useClock() {
  * A schermo intero (o come app installata) occupa la fascia della fotocamera invece di aggiungersi
  * sotto di essa: alta quanto la safe area (minimo 2rem), contenuto in basso e lontano dagli angoli.
  */
-function PhoneStatusBar({ className = '' }: { className?: string }) {
+function PhoneStatusBar({ className = '', left }: { className?: string; left?: React.ReactNode }) {
   const time = useClock()
   return (
     <div
-      className={`flex h-[max(2rem,env(safe-area-inset-top))] shrink-0 items-end justify-between border-b border-surface0 bg-mantle px-4 pb-2 text-xs ${className}`}
+      className={`flex h-[max(2.25rem,env(safe-area-inset-top))] shrink-0 items-center justify-between gap-3 border-b border-surface0 bg-mantle px-4 text-xs ${className}`}
     >
-      <span className="flex items-center">
-        <span className="text-green">{profile.user}</span>
-        <span className="text-overlay">@</span>
-        <span className="text-blue">{profile.host}</span>
-      </span>
-      <span className="flex items-center gap-2 text-subtext">
+      {left ?? (
+        <span className="flex items-center">
+          <span className="text-green">{profile.user}</span>
+          <span className="text-overlay">@</span>
+          <span className="text-blue">{profile.host}</span>
+        </span>
+      )}
+      <span className="flex shrink-0 items-center gap-2 text-subtext">
         <Signal size={12} />
         <Wifi size={12} />
         <BatteryFull size={15} />
@@ -142,12 +144,12 @@ function Home({ inert }: { inert: boolean }) {
 
       <nav
         aria-label="Dock"
-        className={`relative mx-4 mb-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.5rem))] grid grid-cols-4 gap-3 rounded-lg border border-surface1 bg-mantle/85 p-2.5 shadow-xl shadow-black/40 backdrop-blur-md transition-[transform,opacity] duration-300 ease-out ${
+        className={`relative mx-4 mb-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.5rem))] grid grid-cols-4 justify-items-center gap-2 rounded-lg border border-surface1 bg-mantle/85 p-2 shadow-xl shadow-black/40 backdrop-blur-md transition-[transform,opacity] duration-300 ease-out ${
           bars ? '' : 'translate-y-28 opacity-0'
         }`}
       >
         {DOCK.map((t) => (
-          <TileButton key={tileKey(t)} tile={t} visible />
+          <TileButton key={tileKey(t)} tile={t} visible compact />
         ))}
       </nav>
     </div>
@@ -160,7 +162,9 @@ const ICON_BOX =
   'grid aspect-square w-full place-items-center rounded-md border border-surface1 bg-mantle/80 text-subtext transition-colors group-active:border-accent group-active:text-accent'
 const LABEL = 'w-full truncate text-center text-[11px] text-subtext'
 
-function TileButton({ tile, visible, delay = 0, withLabel = false }: { tile: Tile; visible: boolean; delay?: number; withLabel?: boolean }) {
+function TileButton({ tile, visible, delay = 0, withLabel = false, compact = false }: { tile: Tile; visible: boolean; delay?: number; withLabel?: boolean; compact?: boolean }) {
+  // Nella dock le icone hanno misura fissa: la dock resta bassa anche su schermi larghi.
+  const box = compact ? ICON_BOX.replace('aspect-square w-full', 'size-14') : ICON_BOX
   const pop = `group flex flex-col items-center gap-1.5 transition-[transform,opacity] duration-300 ease-out ${visible ? '' : 'scale-75 opacity-0'}`
   const style = { transitionDelay: visible ? `${delay}ms` : '0ms' }
 
@@ -168,7 +172,7 @@ function TileButton({ tile, visible, delay = 0, withLabel = false }: { tile: Til
     const { icon: Icon, label, title } = APPS[tile.id]
     return (
       <button type="button" aria-label={withLabel ? undefined : label} onClick={(e) => openApp(tile.id, e)} className={pop} style={style}>
-        <span className={ICON_BOX}>
+        <span className={box}>
           <Icon className="size-[44%]" strokeWidth={1.6} />
         </span>
         {withLabel && <span className={LABEL}>{title}</span>}
@@ -188,7 +192,7 @@ function TileButton({ tile, visible, delay = 0, withLabel = false }: { tile: Til
       className={pop}
       style={style}
     >
-      <span className={ICON_BOX}>
+      <span className={box}>
         <LinkGlyph icon={link.icon} size={22} />
       </span>
       {withLabel && <span className={LABEL}>{link.label.toLowerCase()}</span>}
@@ -244,17 +248,22 @@ function AppView({ id, closing, onHome }: { id: AppId; closing: boolean; onHome:
       className={`absolute inset-0 z-10 flex flex-col overflow-hidden bg-base outline-none ${closing ? 'animate-app-close' : 'animate-app-open'}`}
       style={{ transformOrigin: tapOrigin }}
     >
-      <PhoneStatusBar />
-      {/* Come la title bar delle finestre desktop. */}
-      <header className="flex h-10 shrink-0 items-center gap-2 border-b border-surface1 bg-mantle px-2 text-xs">
-        <button type="button" onClick={onHome} className="flex items-center gap-0.5 rounded-sm px-1 py-1 text-accent active:bg-surface0">
-          <ChevronLeft size={16} />
-          home
-        </button>
-        <span className="text-overlay">│</span>
-        <Icon size={14} className="text-accent" />
-        <h1 className="truncate text-text">{app.title}</h1>
-      </header>
+      {/* Un'unica fascia: ritorno e titolo dell'app al posto di utente@host (spazio recuperato). */}
+      <PhoneStatusBar
+        left={
+          <span className="flex min-w-0 items-center gap-2">
+            <button type="button" onClick={onHome} className="-ml-2 flex min-h-9 shrink-0 items-center gap-0.5 rounded-sm px-1.5 text-accent active:bg-surface0">
+              <ChevronLeft size={16} />
+              home
+            </button>
+            <span className="text-overlay" aria-hidden="true">
+              │
+            </span>
+            <Icon size={14} className="shrink-0 text-accent" />
+            <h1 className="truncate text-text">{app.title}</h1>
+          </span>
+        }
+      />
       <main className="relative flex min-h-0 flex-1 flex-col">
         <Suspense fallback={<p role="status" className="p-4 text-overlay">loading {app.title}…</p>}>
           <Body />
@@ -271,9 +280,9 @@ function AppView({ id, closing, onHome }: { id: AppId; closing: boolean; onHome:
         }}
         // Il puntatore è gestito sopra (tap e swipe): il click serve solo a Invio/Spazio.
         onClick={(e) => e.detail === 0 && onHome()}
-        className="flex h-6 w-full shrink-0 cursor-pointer touch-none items-center justify-center border-t border-surface0 bg-mantle pb-[env(safe-area-inset-bottom)]"
+        className="flex h-[calc(1rem+env(safe-area-inset-bottom))] w-full shrink-0 cursor-pointer touch-none items-start justify-center bg-base pt-1.5"
       >
-        <span className="h-1 w-28 rounded-full bg-overlay" />
+        <span className="h-1 w-28 rounded-full bg-overlay/70" />
       </button>
     </div>
   )
