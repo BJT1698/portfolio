@@ -18,14 +18,22 @@ type Step = (typeof STEPS)[number]
 /** Saluto che cambia lingua, come la schermata "Hello" di iOS. */
 const GREETINGS = ['Ciao', 'Hello', 'Hola', 'Bonjour', 'Hallo', 'Olá']
 
+/** Durata dell'uscita della guida: in parallelo la home si ricompone (vedi MobileShell). */
+const EXIT_MS = 500
+
 function close(open?: AppId) {
+  const session = useSession.getState()
+  if (session.setupLeaving) return
   beep(open ? 'open' : 'close')
-  useSession.getState().closeSetup()
+  session.leaveSetup()
+  // Un'app scelta dal tour si apre subito, sotto la guida che si dissolve.
   if (open) useWM.getState().open(open)
+  setTimeout(() => useSession.getState().closeSetup(), EXIT_MS)
 }
 
 export function SetupWizard() {
   const [index, setIndex] = useState(0)
+  const leaving = useSession((s) => s.setupLeaving)
   const step: Step = STEPS[index]
   const last = index === STEPS.length - 1
   const headingRef = useRef<HTMLHeadingElement>(null)
@@ -47,7 +55,10 @@ export function SetupWizard() {
       role="dialog"
       aria-modal="true"
       aria-label="Benvenuto"
-      className="absolute inset-0 z-30 flex animate-fade-in flex-col bg-base pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]"
+      className={`absolute inset-0 z-30 flex animate-fade-in flex-col bg-base pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] transition-[opacity,transform] ease-out ${
+        leaving ? 'pointer-events-none scale-110 opacity-0' : ''
+      }`}
+      style={{ transitionDuration: `${EXIT_MS}ms` }}
       onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
       onTouchEnd={(e) => {
         if (touchX.current === null) return

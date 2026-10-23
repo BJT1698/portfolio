@@ -139,11 +139,17 @@ function PhoneStatusBar({ className = '', left }: { className?: string; left?: R
 function Home({ inert }: { inert: boolean }) {
   const stage = useSession((s) => s.stage)
   const wallpaper = useSettings((s) => s.wallpaper)
-  const bars = stage >= STAGE.bars
-  const icons = stage >= STAGE.icons
+  // Con la guida aperta la home resta "smontata": si ricompone quando la guida comincia a uscire,
+  // così all'utente arriva l'animazione (zoom, barre che scorrono, icone che spuntano) e non uno scatto.
+  const revealed = useSession((s) => !s.setupOpen || s.setupLeaving)
+  const bars = stage >= STAGE.bars && revealed
+  const icons = stage >= STAGE.icons && revealed
 
   return (
-    <div className="absolute inset-0 flex flex-col" inert={inert}>
+    <div
+      className={`absolute inset-0 flex flex-col transition-transform duration-700 ease-[cubic-bezier(0.2,0.9,0.3,1)] ${revealed ? 'scale-100' : 'scale-[0.92]'}`}
+      inert={inert}
+    >
       <div className={`absolute inset-0 wallpaper-${wallpaper} transition-opacity duration-700 ${stage >= STAGE.wallpaper ? 'opacity-100' : 'opacity-0'}`} />
       <PhoneStatusBar className={`relative transition-[transform,opacity] duration-300 ease-out ${bars ? '' : '-translate-y-full opacity-0'}`} />
 

@@ -14,15 +14,20 @@ interface Session {
   stage: number
   /** Configurazione iniziale stile Android/iOS aperta (solo mobile). */
   setupOpen: boolean
+  /** La guida sta uscendo con l'animazione: intanto la home comincia a comparire. */
+  setupLeaving: boolean
   setStage(stage: number): void
   openSetup(): void
+  leaveSetup(): void
   closeSetup(): void
 }
 
 export const useSession = create<Session>()((set) => ({
   stage: STAGE.boot,
   setupOpen: false,
+  setupLeaving: false,
   setStage: (stage) => set({ stage }),
-  openSetup: () => set({ setupOpen: true }),
-  closeSetup: () => set({ setupOpen: false }),
+  openSetup: () => set({ setupOpen: true, setupLeaving: false }),
+  leaveSetup: () => set({ setupLeaving: true }),
+  closeSetup: () => set({ setupOpen: false, setupLeaving: false }),
 }))
