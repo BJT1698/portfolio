@@ -3,7 +3,6 @@ import { ArrowUpRight, Check, ChevronLeft, ChevronRight, Circle, MapPin } from '
 import { APPS, type AppId } from '../apps/registry'
 import { PERSONAL, WORK, type WelcomeItem } from '../apps/welcomeItems'
 import { profile } from '../config/profile'
-import { themes } from '../config/themes'
 import { LinkGlyph } from '../lib/icons'
 import { beep } from '../lib/sound'
 import { useSession } from '../store/session'
@@ -13,7 +12,7 @@ import { useWM } from '../store/windows'
 // Benvenuto su mobile in stile configurazione iniziale di Android/iOS: un passo per schermata,
 // titolo grande, pulsante principale in basso, indicatore di avanzamento. Swipe orizzontale tra i passi.
 
-const STEPS = ['hello', 'theme', 'tour', 'done'] as const
+const STEPS = ['hello', 'tour', 'done'] as const
 type Step = (typeof STEPS)[number]
 
 /** Saluto che cambia lingua, come la schermata "Hello" di iOS. */
@@ -74,7 +73,6 @@ export function SetupWizard() {
 
       <div key={step} className="flex min-h-0 flex-1 animate-fade-in flex-col overflow-y-auto overscroll-contain px-6">
         {step === 'hello' && <Hello headingRef={headingRef} />}
-        {step === 'theme' && <ThemeStep headingRef={headingRef} />}
         {step === 'tour' && <TourStep headingRef={headingRef} />}
         {step === 'done' && <DoneStep headingRef={headingRef} />}
       </div>
@@ -139,44 +137,6 @@ function Hello({ headingRef }: StepProps) {
         )}
       </p>
     </div>
-  )
-}
-
-function ThemeStep({ headingRef }: StepProps) {
-  const theme = useSettings((s) => s.theme)
-  const setTheme = useSettings((s) => s.setTheme)
-  return (
-    <>
-      <Title headingRef={headingRef} sub="Si applica subito. Puoi cambiarlo quando vuoi dalle Impostazioni.">
-        Scegli un tema
-      </Title>
-      <div role="radiogroup" aria-label="Tema" className="divide-y divide-surface0 overflow-hidden rounded-md border border-surface0 bg-mantle">
-        {themes.map((t) => {
-          const on = theme === t.id
-          return (
-            <button
-              key={t.id}
-              type="button"
-              role="radio"
-              aria-checked={on}
-              onClick={() => {
-                setTheme(t.id)
-                beep('click')
-              }}
-              className={`flex min-h-12 w-full items-center gap-3 px-3 text-left focus-visible:-outline-offset-2 ${on ? 'bg-surface0/60' : 'active:bg-surface0'}`}
-            >
-              <span className="flex shrink-0 overflow-hidden rounded-sm border border-surface1">
-                {t.swatch.map((c) => (
-                  <span key={c} className="h-5 w-3.5" style={{ background: c }} />
-                ))}
-              </span>
-              <span className={`flex-1 truncate ${on ? 'text-text' : 'text-subtext'}`}>{t.label}</span>
-              {on && <Check size={18} className="shrink-0 text-accent" />}
-            </button>
-          )
-        })}
-      </div>
-    </>
   )
 }
 
