@@ -9,6 +9,7 @@ import { links, type SocialLink } from '../config/links'
 import { LinkGlyph } from '../lib/icons'
 import { beep } from '../lib/sound'
 import { canFullscreen, enterFullscreen, isStandalone } from '../lib/fullscreen'
+import { SetupWizard } from './SetupWizard'
 
 // Shell mobile: home a griglia (layout stile iOS, linguaggio visivo del desktop), app a schermo intero.
 
@@ -44,6 +45,16 @@ function openApp(id: AppId, e: React.MouseEvent<HTMLElement>) {
   useWM.getState().open(id)
 }
 
+/** Configurazione iniziale all'apertura del sito (una volta per sessione), se l'utente non l'ha disattivata. */
+let setupShown = false
+function useSetupOnStart() {
+  useEffect(() => {
+    if (setupShown || !useSettings.getState().showWelcome) return
+    setupShown = true
+    useSession.getState().openSetup()
+  }, [])
+}
+
 /** Schermo intero al primo tocco della sessione (anche quello che salta l'avvio). Una volta sola: se l'utente esce, non insiste. */
 let fullscreenRequested = false
 function useAutoFullscreen() {
@@ -65,6 +76,8 @@ export function MobileShell() {
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   useEffect(() => () => clearTimeout(timer.current), [])
   useAutoFullscreen()
+  const setupOpen = useSession((s) => s.setupOpen)
+  useSetupOnStart()
 
   const goHome = () => {
     if (closing) return
@@ -79,8 +92,9 @@ export function MobileShell() {
   return (
     <div className="relative h-dvh overflow-hidden bg-crust">
       {/* Con un'app aperta la home resta sotto: fuori da Tab e screen reader. */}
-      <Home inert={!!focused} />
+      <Home inert={!!focused || setupOpen} />
       {focused && <AppView key={focused} id={focused} closing={closing} onHome={goHome} />}
+      {setupOpen && <SetupWizard />}
     </div>
   )
 }

@@ -9,6 +9,8 @@ import { profile } from '../config/profile'
 import { fonts } from '../config/fonts'
 import { loadFont } from '../lib/fonts'
 import { canFullscreen, enterFullscreen, exitFullscreen } from '../lib/fullscreen'
+import { useSession } from '../store/session'
+import { useWM } from '../store/windows'
 
 const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <fieldset className="border-b border-surface0 py-3 last:border-0">
@@ -312,6 +314,7 @@ function MobileSettings() {
         </div>
         <KbLayout mobile value={kbLayout} onToggle={toggleKbLayout} />
         {canFullscreen() && <FullscreenRow />}
+        <WelcomeRow />
       </Group>
 
       <Group title="info">
@@ -335,6 +338,38 @@ function MobileSettings() {
 }
 
 /** Interruttore vero: traccia + pomello, area di tocco 44px. */
+/** Guida di benvenuto: attivabile all'avvio e riapribile subito (chiude l'app e la mostra). */
+function WelcomeRow() {
+  const on = useSettings((s) => s.showWelcome)
+  const toggle = useSettings((s) => s.toggleShowWelcome)
+  return (
+    <div className={ROW}>
+      <span className="min-w-0 flex-1">
+        <span className="block text-text" id="set-welcome">Guida di benvenuto</span>
+        <button
+          type="button"
+          onClick={() => {
+            beep('open')
+            useWM.getState().closeAll()
+            useSession.getState().openSetup()
+          }}
+          className="-ml-1 rounded-sm px-1 text-xs text-accent active:bg-surface0"
+        >
+          rivedila ora ›
+        </button>
+      </span>
+      <Switch
+        on={on}
+        labelledBy="set-welcome"
+        onChange={() => {
+          toggle()
+          beep('click')
+        }}
+      />
+    </div>
+  )
+}
+
 /** Schermo intero automatico: attivandolo entra subito (il tocco è un gesto valido), disattivandolo esce. */
 function FullscreenRow() {
   const auto = useSettings((s) => s.autoFullscreen)

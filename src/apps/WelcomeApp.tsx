@@ -1,7 +1,7 @@
 import { ArrowUpRight, ChevronRight, Circle, CircleHelp, MapPin, Settings } from 'lucide-react'
 import { APPS, type AppId } from './registry'
 import { profile } from '../config/profile'
-import { cvLinks, type SocialLink } from '../config/links'
+import { WORK, PERSONAL, type WelcomeItem as Item } from './welcomeItems'
 import { LinkGlyph } from '../lib/icons'
 import { moveFocus, useWM } from '../store/windows'
 import { useSettings } from '../store/settings'
@@ -9,21 +9,6 @@ import { beep } from '../lib/sound'
 
 // App di benvenuto stile "welcome" delle distro: presentazione e scorciatoie alle sezioni,
 // divise tra parte professionale e personale.
-
-type Item = { kind: 'app'; id: AppId; title: string; desc: string } | { kind: 'link'; link: SocialLink; desc: string }
-
-const WORK: Item[] = [
-  { kind: 'app', id: 'cv', title: 'Curriculum', desc: 'esperienza, competenze e formazione · PDF scaricabile' },
-  { kind: 'app', id: 'about', title: 'Chi sono', desc: 'profilo, stack e contatti' },
-  { kind: 'app', id: 'terminal', title: 'Terminale', desc: 'il CV da riga di comando: prova help' },
-  ...cvLinks.map((link): Item => ({ kind: 'link', link, desc: link.icon === 'email' ? link.handle : 'profilo professionale' })),
-]
-
-const PERSONAL: Item[] = [
-  { kind: 'app', id: 'gallery', title: 'Gallery', desc: 'le mie foto, da gallery.bjt1698.it' },
-  { kind: 'app', id: 'videos', title: 'Video', desc: 'giri in moto su YouTube' },
-  { kind: 'app', id: 'socials', title: 'Social & link', desc: 'GitHub, Instagram e tutti gli altri link' },
-]
 
 function open(id: AppId) {
   beep('open')

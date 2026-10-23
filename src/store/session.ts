@@ -12,10 +12,17 @@ export const STAGE = {
 
 interface Session {
   stage: number
+  /** Configurazione iniziale stile Android/iOS aperta (solo mobile). */
+  setupOpen: boolean
   setStage(stage: number): void
+  openSetup(): void
+  closeSetup(): void
 }
 
 export const useSession = create<Session>()((set) => ({
   stage: STAGE.boot,
+  setupOpen: false,
   setStage: (stage) => set({ stage }),
+  openSetup: () => set({ setupOpen: true }),
+  closeSetup: () => set({ setupOpen: false }),
 }))
