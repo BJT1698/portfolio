@@ -8,7 +8,6 @@ import { useIsMobile } from '../lib/useMediaQuery'
 import { profile } from '../config/profile'
 import { fonts } from '../config/fonts'
 import { loadFont } from '../lib/fonts'
-import { canFullscreen, enterFullscreen, exitFullscreen } from '../lib/fullscreen'
 import { useSession } from '../store/session'
 import { useWM } from '../store/windows'
 
@@ -313,7 +312,6 @@ function MobileSettings() {
           />
         </div>
         <KbLayout mobile value={kbLayout} onToggle={toggleKbLayout} />
-        {canFullscreen() && <FullscreenRow />}
         <WelcomeRow />
       </Group>
 
@@ -362,30 +360,6 @@ function WelcomeRow() {
         on={on}
         labelledBy="set-welcome"
         onChange={() => {
-          toggle()
-          beep('click')
-        }}
-      />
-    </div>
-  )
-}
-
-/** Schermo intero automatico: attivandolo entra subito (il tocco è un gesto valido), disattivandolo esce. */
-function FullscreenRow() {
-  const auto = useSettings((s) => s.autoFullscreen)
-  const toggle = useSettings((s) => s.toggleAutoFullscreen)
-  return (
-    <div className={ROW}>
-      <span className="min-w-0 flex-1">
-        <span className="block text-text" id="set-fullscreen">Schermo intero</span>
-        <span className="block text-xs text-overlay">nasconde la barra del browser</span>
-      </span>
-      <Switch
-        on={auto}
-        labelledBy="set-fullscreen"
-        onChange={() => {
-          if (auto) exitFullscreen()
-          else enterFullscreen()
           toggle()
           beep('click')
         }}

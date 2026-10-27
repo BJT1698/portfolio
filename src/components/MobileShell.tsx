@@ -8,7 +8,6 @@ import { profile } from '../config/profile'
 import { links, type SocialLink } from '../config/links'
 import { LinkGlyph } from '../lib/icons'
 import { beep } from '../lib/sound'
-import { canFullscreen, enterFullscreen, isStandalone } from '../lib/fullscreen'
 import { SetupWizard } from './SetupWizard'
 
 // Shell mobile: home a griglia (layout stile iOS, linguaggio visivo del desktop), app a schermo intero.
@@ -55,27 +54,11 @@ function useSetupOnStart() {
   }, [])
 }
 
-/** Schermo intero al primo tocco della sessione (anche quello che salta l'avvio). Una volta sola: se l'utente esce, non insiste. */
-let fullscreenRequested = false
-function useAutoFullscreen() {
-  const auto = useSettings((s) => s.autoFullscreen)
-  useEffect(() => {
-    if (!auto || fullscreenRequested || !canFullscreen() || isStandalone()) return
-    const onTap = () => {
-      fullscreenRequested = true
-      enterFullscreen()
-    }
-    window.addEventListener('pointerup', onTap, { once: true, capture: true })
-    return () => window.removeEventListener('pointerup', onTap, { capture: true })
-  }, [auto])
-}
-
 export function MobileShell() {
   const focused = useWM((s) => s.focused)
   const [closing, setClosing] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   useEffect(() => () => clearTimeout(timer.current), [])
-  useAutoFullscreen()
   const setupOpen = useSession((s) => s.setupOpen)
   useSetupOnStart()
 
