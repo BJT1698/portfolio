@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useRef, useState } from 'react'
-import { BatteryFull, ChevronLeft, Signal, Wifi } from 'lucide-react'
+import { BatteryFull, ChevronLeft, House, Signal, Wifi } from 'lucide-react'
 import { useWM } from '../store/windows'
 import { useSettings } from '../store/settings'
 import { STAGE, useSession } from '../store/session'
@@ -239,7 +239,6 @@ function AppView({ id, closing, onHome }: { id: AppId; closing: boolean; onHome:
   const app = APPS[id]
   const Body = app.component
   const Icon = app.icon
-  const startY = useRef(0)
   const rootRef = useRef<HTMLDivElement>(null)
   // La home diventa inert: il focus da tastiera entra nell'app appena aperta.
   useEffect(() => rootRef.current?.focus({ preventScroll: true }), [])
@@ -272,21 +271,45 @@ function AppView({ id, closing, onHome }: { id: AppId; closing: boolean; onHome:
           <Body />
         </Suspense>
       </main>
-      {/* Home indicator: tocco o swipe verso l'alto tornano alla home. */}
-      <button
-        type="button"
-        aria-label="Torna alla home"
-        onPointerDown={(e) => (startY.current = e.clientY)}
-        onPointerUp={(e) => {
-          const dy = e.clientY - startY.current
-          if (Math.abs(dy) < 10 || dy < -15) onHome()
-        }}
-        // Il puntatore è gestito sopra (tap e swipe): il click serve solo a Invio/Spazio.
-        onClick={(e) => e.detail === 0 && onHome()}
-        className="flex h-[calc(1rem+env(safe-area-inset-bottom))] w-full shrink-0 cursor-pointer touch-none items-start justify-center bg-base pt-1.5"
-      >
-        <span className="h-1 w-28 rounded-full bg-overlay/70" />
-      </button>
+      <AppNavbar current={id} onHome={onHome} />
     </div>
+  )
+}
+
+/** Voci della navbar delle app: home più le sezioni principali, per passare dall'una all'altra senza tornare alla home. */
+const NAV_APPS: AppId[] = ['cv', 'about', 'terminal', 'socials']
+const NAV_LABEL: Partial<Record<AppId, string>> = { cv: 'curriculum', about: 'about', terminal: 'terminale', socials: 'social' }
+
+/** Navbar in basso nelle app: sostituisce l'indicatore a pillola, che si confondeva con quello del telefono. */
+function AppNavbar({ current, onHome }: { current: AppId; onHome: () => void }) {
+  const item = 'flex min-h-12 flex-col items-center justify-center gap-0.5 text-[10px] focus-visible:-outline-offset-2'
+  return (
+    <nav aria-label="Navigazione" className="grid shrink-0 grid-cols-5 border-t border-surface0 bg-mantle pb-[env(safe-area-inset-bottom)]">
+      <button type="button" onClick={onHome} className={`${item} text-subtext active:text-accent`}>
+        <House size={20} strokeWidth={1.7} aria-hidden="true" />
+        home
+      </button>
+      {NAV_APPS.map((nid) => {
+        const Icon = APPS[nid].icon
+        const active = nid === current
+        return (
+          <button
+            key={nid}
+            type="button"
+            aria-current={active ? 'page' : undefined}
+            onClick={(e) => {
+              if (active) return
+              // Un'app alla volta su mobile: si passa direttamente alla nuova.
+              useWM.getState().closeAll()
+              openApp(nid, e)
+            }}
+            className={`${item} ${active ? 'text-accent' : 'text-subtext active:text-accent'}`}
+          >
+            <Icon size={20} strokeWidth={1.7} aria-hidden="true" />
+            {NAV_LABEL[nid]}
+          </button>
+        )
+      })}
+    </nav>
   )
 }
