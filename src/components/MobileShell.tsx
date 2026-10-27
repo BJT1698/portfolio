@@ -1,5 +1,5 @@
-import { Suspense, useEffect, useRef, useState } from 'react'
-import { BatteryFull, ChevronLeft, House, Signal, Wifi } from 'lucide-react'
+import { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { BatteryFull, ChevronLeft, Circle, Signal, Triangle, Wifi } from 'lucide-react'
 import { useWM } from '../store/windows'
 import { useSettings } from '../store/settings'
 import { STAGE, useSession } from '../store/session'
@@ -72,11 +72,33 @@ export function MobileShell() {
     }, 220)
   }
 
+  // Cronologia del browser: aprire un'app aggiunge una voce, così l'"indietro" del telefono
+  // (gesto o tasto) chiude l'app invece di uscire dal sito.
+  const goHomeRef = useRef(goHome)
+  useLayoutEffect(() => {
+    goHomeRef.current = goHome
+  })
+  useEffect(() => {
+    const ours = history.state?.mobileApp === true
+    if (focused && !ours) history.pushState({ mobileApp: true }, '')
+    // App chiusa per altre vie (es. `exit` nel terminale): togli la voce rimasta.
+    else if (!focused && ours) history.back()
+  }, [focused])
+  useEffect(() => {
+    const onPop = () => {
+      if (useWM.getState().focused) goHomeRef.current()
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
+  /** Indietro/home dai pulsanti: passa dalla cronologia, così resta allineata al tasto del telefono. */
+  const leaveApp = () => (history.state?.mobileApp === true ? history.back() : goHome())
+
   return (
     <div className="relative h-dvh overflow-hidden bg-crust">
       {/* Con un'app aperta la home resta sotto: fuori da Tab e screen reader. */}
       <Home inert={!!focused || setupOpen} />
-      {focused && <AppView key={focused} id={focused} closing={closing} onHome={goHome} />}
+      {focused && <AppView key={focused} id={focused} closing={closing} onHome={leaveApp} />}
       {setupOpen && <SetupWizard />}
     </div>
   )
@@ -271,45 +293,27 @@ function AppView({ id, closing, onHome }: { id: AppId; closing: boolean; onHome:
           <Body />
         </Suspense>
       </main>
-      <AppNavbar current={id} onHome={onHome} />
+      <AppNavbar onBack={onHome} onHome={onHome} />
     </div>
   )
 }
 
-/** Voci della navbar delle app: home più le sezioni principali, per passare dall'una all'altra senza tornare alla home. */
-const NAV_APPS: AppId[] = ['cv', 'about', 'terminal', 'socials']
-const NAV_LABEL: Partial<Record<AppId, string>> = { cv: 'curriculum', about: 'about', terminal: 'terminale', socials: 'social' }
-
-/** Navbar in basso nelle app: sostituisce l'indicatore a pillola, che si confondeva con quello del telefono. */
-function AppNavbar({ current, onHome }: { current: AppId; onHome: () => void }) {
-  const item = 'flex min-h-12 flex-col items-center justify-center gap-0.5 text-[10px] focus-visible:-outline-offset-2'
+/**
+ * Barra di navigazione a pulsanti stile Android 9/10: ◁ indietro e ○ home nelle stesse posizioni
+ * (la terza colonna, quella delle app recenti, resta vuota). Sostituisce la pillola, che si confondeva
+ * con l'indicatore di sistema del telefono. Con un'app alla volta, indietro e home chiudono l'app.
+ */
+function AppNavbar({ onBack, onHome }: { onBack: () => void; onHome: () => void }) {
+  const btn = 'grid h-12 place-items-center text-subtext active:bg-surface0 active:text-accent focus-visible:-outline-offset-2'
   return (
-    <nav aria-label="Navigazione" className="grid shrink-0 grid-cols-5 border-t border-surface0 bg-mantle pb-[env(safe-area-inset-bottom)]">
-      <button type="button" onClick={onHome} className={`${item} text-subtext active:text-accent`}>
-        <House size={20} strokeWidth={1.7} aria-hidden="true" />
-        home
+    <nav aria-label="Navigazione" className="grid shrink-0 grid-cols-3 border-t border-surface0 bg-mantle pb-[env(safe-area-inset-bottom)]">
+      <button type="button" aria-label="Indietro" onClick={onBack} className={btn}>
+        <Triangle size={17} strokeWidth={2} className="-rotate-90" aria-hidden="true" />
       </button>
-      {NAV_APPS.map((nid) => {
-        const Icon = APPS[nid].icon
-        const active = nid === current
-        return (
-          <button
-            key={nid}
-            type="button"
-            aria-current={active ? 'page' : undefined}
-            onClick={(e) => {
-              if (active) return
-              // Un'app alla volta su mobile: si passa direttamente alla nuova.
-              useWM.getState().closeAll()
-              openApp(nid, e)
-            }}
-            className={`${item} ${active ? 'text-accent' : 'text-subtext active:text-accent'}`}
-          >
-            <Icon size={20} strokeWidth={1.7} aria-hidden="true" />
-            {NAV_LABEL[nid]}
-          </button>
-        )
-      })}
+      <button type="button" aria-label="Home" onClick={onHome} className={btn}>
+        <Circle size={19} strokeWidth={2} aria-hidden="true" />
+      </button>
+      <span aria-hidden="true" />
     </nav>
   )
 }
