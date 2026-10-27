@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { BatteryFull, ChevronLeft, Circle, Signal, Triangle, Wifi } from 'lucide-react'
+import { BatteryFull, ChevronLeft, House, Signal, Wifi } from 'lucide-react'
 import { useWM } from '../store/windows'
 import { useSettings } from '../store/settings'
 import { STAGE, useSession } from '../store/session'
@@ -299,21 +299,30 @@ function AppView({ id, closing, onHome }: { id: AppId; closing: boolean; onHome:
 }
 
 /**
- * Barra di navigazione a pulsanti stile Android 9/10: ◁ indietro e ○ home nelle stesse posizioni
- * (la terza colonna, quella delle app recenti, resta vuota). Sostituisce la pillola, che si confondeva
- * con l'indicatore di sistema del telefono. Con un'app alla volta, indietro e home chiudono l'app.
+ * Barra di navigazione delle app: indietro e home come due tasti nello stile del sito
+ * (bordo sottile, monospace, comando di shell equivalente come richiamo al terminale).
+ * Sostituisce la pillola, che si confondeva con l'indicatore di sistema del telefono.
+ * Con un'app alla volta, indietro e home chiudono l'app.
  */
 function AppNavbar({ onBack, onHome }: { onBack: () => void; onHome: () => void }) {
-  const btn = 'grid h-12 place-items-center text-subtext active:bg-surface0 active:text-accent focus-visible:-outline-offset-2'
+  const key =
+    'flex h-10 items-center justify-center gap-2 rounded-md border border-surface1 bg-base/60 text-sm text-subtext transition-colors active:border-accent active:text-accent focus-visible:outline-offset-[-3px]'
   return (
-    <nav aria-label="Navigazione" className="grid shrink-0 grid-cols-3 border-t border-surface0 bg-mantle pb-[env(safe-area-inset-bottom)]">
-      <button type="button" aria-label="Indietro" onClick={onBack} className={btn}>
-        <Triangle size={17} strokeWidth={2} className="-rotate-90" aria-hidden="true" />
+    <nav aria-label="Navigazione" className="grid shrink-0 grid-cols-2 gap-2 border-t border-surface0 bg-mantle px-3 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <button type="button" onClick={onBack} className={key}>
+        <ChevronLeft size={16} className="text-accent" aria-hidden="true" />
+        indietro
+        <span className="text-xs text-overlay" aria-hidden="true">
+          cd ..
+        </span>
       </button>
-      <button type="button" aria-label="Home" onClick={onHome} className={btn}>
-        <Circle size={19} strokeWidth={2} aria-hidden="true" />
+      <button type="button" onClick={onHome} className={key}>
+        <House size={15} className="text-accent" aria-hidden="true" />
+        home
+        <span className="text-xs text-overlay" aria-hidden="true">
+          cd ~
+        </span>
       </button>
-      <span aria-hidden="true" />
     </nav>
   )
 }
